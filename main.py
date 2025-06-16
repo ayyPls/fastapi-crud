@@ -54,8 +54,9 @@ def get_user_by_id(session: SessionDep, user_id: int):
 
 
 @app.get("/users")
-def get_users(session: SessionDep, limit: Annotated[int, Query(le=10)] = 10, offset: int = 0):
-    return session.exec(select(User).offset(offset).limit(limit)).all()
+def get_users(session: SessionDep, limit: Annotated[int, Query(le=100)] = 100, offset: int = 0):
+    users = session.exec(select(User)).all()
+    return {"users": users[offset:offset+limit], "total": len(users)}
 
 
 @app.post("/user", response_model=User, status_code=status.HTTP_201_CREATED)
